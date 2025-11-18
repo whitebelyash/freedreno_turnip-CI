@@ -34,4 +34,4 @@ jobs:
         tag_name: github_run
         name: Action Release
         files: |
-           turnip_workdir/mesa-main/build-android-aarch64/src/freedreno/vulkan/libvulkan_freedreno.so
+           /tmp/turnip/lib/libvulkan_freedreno.so
