@@ -34,4 +34,5 @@ jobs:
         tag_name: github_run
         name: Action Release
         files: |
-           /tmp/turnip/lib/libvulkan_freedreno.so
+           /tmp/a8xx-gen8-hacks.zip
+           /tmp/a8xx-gen8-yuck.zip
