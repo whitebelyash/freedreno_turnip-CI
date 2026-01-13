@@ -30,7 +30,8 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         body: |
-          A8XX Turnip Vulkan V{{ inputs.version }}  
+          A8XX Turnip Vulkan V${{ inputs.version }}  
+          Built from: https://github.com/whitebelyash/mesa-tu8
           
           Supports following GPUs:
           - Adreno 825 (tested, working with minor glitches compared to A830) - GMEM/sysmem
@@ -43,18 +44,13 @@ jobs:
           GPUs other than 830/840 can have reduced performance and/or more glitches. Can't do anything about that, sorry!
 
           Files:
-          * gen8-hacks - main branch (upstream MR + hacks applied)
-          ~~* gen8-yuck - branch with some commits reverted to gain back perf in RDR2. Probably useless at this point~~
-
+          * gen8 - main branch (upstream MR + hacks applied)
+          
           Settings:
           * Disable DXVK_HUD
-          * Enable swapchain blit path to workaround corrupted image on Android: `WRAPPER_BLIT=1` Not required on GameHub
-          * ~~Activate sysmem on A830 - everything will hang/crash/etc without: `TU_DEBUG=sysmem`. Not required on A840/A825~~
-          Now disabled automatically
           * If too unstable - activate nolrz: `TU_DEBUG=nolrz`.
 
         tag_name: tu_v${{ inputs.version }}
         name: Turnip A8XX v${{ inputs.version }}
         files: |
-           /tmp/a8xx-gen8-hacks-V${{ inputs.version }}.zip
-           /tmp/a8xx-gen8-yuck-V${{ inputs.version }}.zip
+           /tmp/a8xx-gen8-V${{ inputs.version }}.zip
