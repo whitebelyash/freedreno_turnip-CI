@@ -21,8 +21,8 @@ run_all(){
 	echo "====== Begin building TU V$BUILD_VERSION! ======"
 	check_deps
 	prepare_workdir
-	build_lib_for_android main
-	#build_lib_for_android gen8-yuck
+	build_lib_for_android main tu_gen8_clean.patch
+	build_lib_for_android flushall tu_gen8_clean_flushall.patch
 }
 
 check_deps(){
@@ -68,6 +68,9 @@ prepare_workdir(){
 
 build_lib_for_android(){
 	echo "==== Building Mesa on $1 branch ===="
+	echo "Applying patches..."
+    	wget https://github.com/whitebelyash/mesa-tu8/releases/download/patchset-head/$2
+    	git apply $2
 	#git checkout origin/$1
 	#Workaround for using Clang as c compiler instead of GCC
 	mkdir -p "$workdir/bin"
@@ -147,8 +150,8 @@ EOF
 	cat <<EOF >"meta.json"
 {
   "schemaVersion": 1,
-  "name": "Mesa 26.0 Turnip v$BUILD_VERSION",
-  "description": "Mesa 26.0 Freedreno/Turnip adapted for AdrenoTools",
+  "name": "Mesa-git Turnip v$BUILD_VERSION",
+  "description": "Mesa-git Freedreno/Turnip adapted for AdrenoTools",
   "author": "whitebelyash",
   "packageVersion": "1",
   "vendor": "Mesa",
