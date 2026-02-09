@@ -65,6 +65,7 @@ prepare_workdir(){
 
 build_lib_for_android(){
 	echo "==== Building Mesa on $1 branch ===="
+	git reset --hard
 	echo "Applying patches... ($2)"
     	wget https://github.com/whitebelyash/mesa-tu8/releases/download/patchset-head/$2
 		if ! git apply --check $2; then
