@@ -56,7 +56,7 @@ prepare_workdir(){
 		unzip "$ndkver"-linux.zip &> /dev/null
 
 	echo "Downloading mesa source ..." $'\n'
-		git clone $mesasrc --depth=1 -b 26.0 $srcfolder
+		git clone $mesasrc --depth=1 -b main $srcfolder
 		cd $srcfolder
 #	echo "Pushing TU_VERSION..."
 #		echo "#define TUGEN8_DRV_VERSION \"v$BUILD_VERSION\"" > ./src/freedreno/vulkan/tu_version.h
