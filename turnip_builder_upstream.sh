@@ -21,8 +21,8 @@ run_all(){
 	echo "====== Begin building TU V$BUILD_VERSION! ======"
 	check_deps
 	prepare_workdir
-	build_lib_for_android main tu_gen8_clean.patch
-	build_lib_for_android flushall tu_gen8_clean_flushall.patch
+	build_lib_for_android main-flushall tu8_kgsl.patch
+	build_lib_for_android main-noflushall 0001-HACK-tu-disable-force-enabled-flushall.patch
 }
 
 check_deps(){
@@ -87,6 +87,7 @@ build_lib_for_android(){
 	export OBJDUMP=llvm-objdump
 	export OBJCOPY=llvm-objcopy
 	export LDFLAGS="-fuse-ld=lld"
+	GITHASH=$(git rev-parse --short HEAD)
 
 	echo "Generating build files ..." $'\n'
 		cat <<EOF >"android-aarch64.txt"
@@ -150,8 +151,8 @@ EOF
 	cat <<EOF >"meta.json"
 {
   "schemaVersion": 1,
-  "name": "Mesa-git Turnip v$BUILD_VERSION",
-  "description": "Mesa-git Freedreno/Turnip adapted for AdrenoTools",
+  "name": "Mesa Turnip v$BUILD_VERSION-$GITHASH",
+  "description": "Mesa-git Freedreno/Turnip adapted for AdrenoTools (git $GITHASH)",
   "author": "whitebelyash",
   "packageVersion": "1",
   "vendor": "Mesa",
