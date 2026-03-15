@@ -58,6 +58,14 @@ prepare_workdir(){
 	echo "Exracting mesa source ..." $'\n'
 		unzip mesa-main.zip &> /dev/null
 		cd mesa-$srcfolder
+	echo "Downloading patchset ..." $'\n'
+		curl https://github.com/whitebelyash/mesa-tu8/releases/download/patchset-head-v2/tu8_kgsl_26.patch --output a8xx.patch &> /dev/null
+	echo "Applying patchset ..." $'\n'
+		if ! git apply --check a8xx.patch; then
+			echo "Failed to apply the patchset!"
+			exit 1
+		fi
+    	git apply a8xx.patch
 }
 
 
