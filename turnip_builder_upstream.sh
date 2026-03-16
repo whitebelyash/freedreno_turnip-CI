@@ -5,6 +5,7 @@ green='\033[0;32m'
 red='\033[0;31m'
 nocolor='\033[0m'
 deps="git meson ninja patchelf unzip curl pip flex bison zip glslang glslangValidator"
+scriptdir="$(cd "$(dirname "$0")" && pwd)"
 workdir="$(pwd)/turnip_workdir"
 magiskdir="$workdir/turnip_module"
 ndkver="android-ndk-r29"
@@ -62,6 +63,23 @@ prepare_workdir(){
 }
 
 
+apply_timeline_sync_fix(){
+	local kgsl_file="src/freedreno/vulkan/tu_knl_kgsl.cc"
+	if ! grep -q "vk_kgsl_timeline_type" "$kgsl_file" 2>/dev/null; then
+		echo "Timeline sync not present in patchset, skipping fix"
+		return
+	fi
+
+	python3 "$scriptdir/patches/fix_timeline_sync.py" "$kgsl_file"
+
+	if grep -q "kgsl_binary_timeline_import_sync_file" "$kgsl_file"; then
+		echo -e "${green}Timeline sync Android fix applied successfully${nocolor}"
+	else
+		echo -e "${red}Warning: Timeline sync fix failed to apply${nocolor}"
+		exit 1
+	fi
+}
+
 build_lib_for_android(){
 	echo "==== Building Mesa on $1 branch ===="
 	#git reset --hard
@@ -72,6 +90,9 @@ build_lib_for_android(){
 			exit 1
 		fi
     	git apply $2
+
+	echo "Applying timeline sync Android fix..."
+	apply_timeline_sync_fix
 	#git checkout origin/$1
 	#Workaround for using Clang as c compiler instead of GCC
 	mkdir -p "$workdir/bin"
