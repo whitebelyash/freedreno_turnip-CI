@@ -11,9 +11,11 @@ magiskdir="$workdir/turnip_module"
 ndkver="android-ndk-r29"
 ndk="$workdir/$ndkver/toolchains/llvm/prebuilt/linux-x86_64/bin"
 sdkver="34"
-mesasrc="https://gitlab.freedesktop.org/mesa/mesa"
-mesacommit="9e277ed2b6d"
+mesasrc="https://gitlab.freedesktop.org/mesa/mesa.git"
 srcfolder="mesa"
+
+# Optional: pin to a specific commit (set via env or leave empty for latest)
+MESA_COMMIT="${MESA_COMMIT:-}"
 
 clear
 
@@ -56,14 +58,18 @@ prepare_workdir(){
 	echo "Exracting android-ndk ..." $'\n'
 		unzip "$ndkver"-linux.zip &> /dev/null
 
-	echo "Downloading mesa source (commit $mesacommit) ..." $'\n'
-		curl -L "$mesasrc/-/archive/$mesacommit/mesa-$mesacommit.tar.gz" -o mesa.tar.gz
+	if [ -n "$MESA_COMMIT" ]; then
+		echo "Downloading mesa source (commit $MESA_COMMIT) ..." $'\n'
+		curl -L "https://gitlab.freedesktop.org/mesa/mesa/-/archive/$MESA_COMMIT/mesa-$MESA_COMMIT.tar.gz" -o mesa.tar.gz
 		tar xzf mesa.tar.gz
-		mv mesa-$mesacommit* $srcfolder
+		mv mesa-$MESA_COMMIT* $srcfolder
 		cd $srcfolder
-		git init && git add -A && git commit -q -m "mesa $mesacommit"
-#	echo "Pushing TU_VERSION..."
-#		echo "#define TUGEN8_DRV_VERSION \"v$BUILD_VERSION\"" > ./src/freedreno/vulkan/tu_version.h
+		git init && git add -A && git commit -q -m "mesa $MESA_COMMIT"
+	else
+		echo "Cloning latest mesa source (main branch) ..." $'\n'
+		git clone --depth=1 --branch main "$mesasrc" "$srcfolder"
+		cd $srcfolder
+	fi
 }
 
 
@@ -84,19 +90,44 @@ apply_timeline_sync_fix(){
 	fi
 }
 
+apply_devices_fix(){
+	local devices_file="src/freedreno/common/freedreno_devices.py"
+	if [ ! -f "$devices_file" ]; then
+		echo -e "${red}freedreno_devices.py not found!${nocolor}"
+		exit 1
+	fi
+
+	python3 "$scriptdir/patches/fix_devices.py" "$devices_file"
+
+	if grep -q "a8xx_825" "$devices_file"; then
+		echo -e "${green}Device entries fix applied successfully${nocolor}"
+	else
+		echo -e "${red}Warning: Device entries fix failed to apply${nocolor}"
+		exit 1
+	fi
+}
+
 build_lib_for_android(){
 	echo "==== Building Mesa on $1 branch ===="
 	#git reset --hard
-	echo "Applying patches... ($2)"
+	echo "Downloading patch... ($2)"
     	wget https://github.com/whitebelyash/mesa-tu8/releases/download/patchset-head-v2/$2
-		if ! git apply $2; then
+
+	echo "Filtering freedreno_devices.py hunks from patch..."
+	python3 "$scriptdir/patches/filter_patch.py" "$2" "${2%.patch}_filtered.patch"
+
+	echo "Applying filtered patches..."
+		if ! git apply "${2%.patch}_filtered.patch"; then
 			echo "git apply failed, trying git am..."
 			git am --abort 2>/dev/null || true
-			if ! git am --3way $2; then
-				echo "Failed to apply $2!"
+			if ! git am --3way "${2%.patch}_filtered.patch"; then
+				echo "Failed to apply ${2%.patch}_filtered.patch!"
 				exit 1
 			fi
 		fi
+
+	echo "Applying freedreno_devices.py fixes..."
+	apply_devices_fix
 
 	echo "Applying timeline sync Android fix..."
 	apply_timeline_sync_fix

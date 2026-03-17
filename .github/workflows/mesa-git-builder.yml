@@ -7,12 +7,18 @@ on:
         description: 'Version to build'
         required: true
         type: string
+      mesa_commit:
+        description: 'Mesa commit hash (leave empty for latest main)'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   start_building_turnip:
     runs-on: ubuntu-24.04
     env:
       BUILD_VERSION: ${{ inputs.version }}
+      MESA_COMMIT: ${{ inputs.mesa_commit }}
     steps:
     - uses: actions/checkout@v3
 
@@ -31,7 +37,7 @@ jobs:
       with:
         body: |
           Mesa Turnip V${{ inputs.version }}  
-          Built from: https://gitlab.freedesktop.org/mesa/mesa
+          Built from: https://gitlab.freedesktop.org/mesa/mesa ${{ inputs.mesa_commit && format('(commit {0})', inputs.mesa_commit) || '(latest main)' }}
           
           >[!WARNING]
           > GPUs other than A830/A840 may work unstable!
@@ -43,4 +49,3 @@ jobs:
         name: Mesa Turnip v${{ inputs.version }}
         files: |
            /tmp/mesa-turnip-main-V${{ inputs.version }}.zip
-
