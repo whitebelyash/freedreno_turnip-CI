@@ -57,10 +57,11 @@ prepare_workdir(){
 		unzip "$ndkver"-linux.zip &> /dev/null
 
 	echo "Downloading mesa source (commit $mesacommit) ..." $'\n'
-		git init $srcfolder
+		curl -L "$mesasrc/-/archive/$mesacommit/mesa-$mesacommit.tar.gz" -o mesa.tar.gz
+		tar xzf mesa.tar.gz
+		mv mesa-$mesacommit* $srcfolder
 		cd $srcfolder
-		git fetch --depth=1 $mesasrc $mesacommit
-		git checkout FETCH_HEAD
+		git init && git add -A && git commit -q -m "mesa $mesacommit"
 #	echo "Pushing TU_VERSION..."
 #		echo "#define TUGEN8_DRV_VERSION \"v$BUILD_VERSION\"" > ./src/freedreno/vulkan/tu_version.h
 }
@@ -88,14 +89,13 @@ build_lib_for_android(){
 	#git reset --hard
 	echo "Applying patches... ($2)"
     	wget https://github.com/whitebelyash/mesa-tu8/releases/download/patchset-head-v2/$2
-		if ! git apply --check $2 2>/dev/null; then
-			echo "Strict apply failed, trying with fuzz..."
-			if ! patch -p1 --fuzz=3 < $2; then
+		if ! git apply $2; then
+			echo "git apply failed, trying git am..."
+			git am --abort 2>/dev/null || true
+			if ! git am --3way $2; then
 				echo "Failed to apply $2!"
 				exit 1
 			fi
-		else
-			git apply $2
 		fi
 
 	echo "Applying timeline sync Android fix..."
