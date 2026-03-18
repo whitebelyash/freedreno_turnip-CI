@@ -1,3 +1,7 @@
-mesa/
-eden_log.txt
-eden_gpu.log
+/logs
+/mesa
+filter_patch.py
+fix_devices.py
+fix_timeline_android_sync.patch
+tu8_kgsl_v1.patch
+tu8_kgsl_v2.patch

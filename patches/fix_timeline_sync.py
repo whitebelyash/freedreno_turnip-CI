@@ -20,6 +20,11 @@ FIX_FUNCTION = r"""
  * was designed for D3D12 where sync file import is not needed. On Android the
  * compositor passes acquire fences via import_sync_file. We CPU-wait on the fd
  * (same as the syncobj path) and then signal the underlying timeline point.
+ *
+ * NOTE: do NOT close(fd) here - ownership stays with the caller per the
+ * import_sync_file contract (see vk_sync_import_sync_file in vk_sync.c).
+ * Closing it here caused a double-close / fdsan abort when the WSI layer
+ * (wsi_create_sync_for_dma_buf_wait) closed the same fd after returning.
  */
 static VkResult
 kgsl_binary_timeline_import_sync_file(struct vk_device *device,
@@ -31,7 +36,7 @@ kgsl_binary_timeline_import_sync_file(struct vk_device *device,
 
    if (fd >= 0) {
       int ret = sync_wait(fd, 3000);
-      close(fd);
+      /* Do NOT close(fd) - the caller owns the fd and will close it. */
       if (ret && errno != ETIME) {
          return vk_errorf(device, VK_ERROR_DEVICE_LOST,
                           "sync_wait on acquire fence failed: %s",
