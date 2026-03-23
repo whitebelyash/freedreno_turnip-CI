@@ -21,7 +21,7 @@ run_all(){
 	echo "====== Begin building TU V$BUILD_VERSION! ======"
 	check_deps
 	prepare_workdir
-	build_lib_for_android gen8
+	build_lib_for_android gen8-clean-26
 	#build_lib_for_android gen8-yuck
 }
 
