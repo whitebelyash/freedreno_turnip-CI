@@ -33,29 +33,7 @@ jobs:
           A8XX Turnip Vulkan V${{ inputs.version }}  
           Built from: https://github.com/whitebelyash/mesa-tu8
           
-          >[!WARNING]
-          > This release is still Beta, especially for devices other than Adreno 840. PLEASE, don't report any issues to Mesa
-          > Original merge request is Draft again, so it's not ready
-                    
-          Supports following GPUs:
-          - Adreno 810 (tested, working, less stable than all other GPUs) - sysmem only
-          - Adreno 825 (tested, working with minor glitches compared to A830) - GMEM/sysmem
-          - Adreno 830 (tested, working) - sysmem-only - gmem causes GPU hangs
-          - Adreno 840 (tested, working) - GMEM/sysmem
-          Following GPUs were added but no proper testing was done:
-          - Adreno 829 (no testers were found)
-          
-          GPUs other than 830/840 can have reduced performance and/or more glitches. Can't do anything about that, sorry!  
-          Adreno 810 is additionally very slow, I'm not sure if you even want to use Turnip there
-          
-          Files:
-          * gen8 - main branch (upstream MR + hacks applied)
-          
-          Notes:
-          * Disable DXVK_HUD if you see weird black artifacts
-          * Apparently there are swizzling glitches in Eden & maybe other emulators, try increasing render scale(?)
-          * Some games may require AMD/NVIDIA GPU to run and refuse to start on Qualcomm or block some features. I've included a patch to spoof as Steam Deck - use `TU_DEBUG=deck_emu`
-          * If too unstable - activate nolrz: `TU_DEBUG=nolrz`.
+          MojoLauncher build test (because dogshit CI produces completely broken builds for whatever reasons, I'm tired)
 
         tag_name: tu_v${{ inputs.version }}
         name: Turnip A8XX v${{ inputs.version }}
