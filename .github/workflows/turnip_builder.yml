@@ -60,4 +60,4 @@ jobs:
         tag_name: tu_v${{ inputs.version }}
         name: Turnip A8XX v${{ inputs.version }}
         files: |
-           /tmp/a8xx-gen8-V${{ inputs.version }}.zip
+           /tmp/a8xx-gen8-clean-26-V${{ inputs.version }}.zip
