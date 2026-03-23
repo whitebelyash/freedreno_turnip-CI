@@ -61,11 +61,7 @@ prepare_workdir(){
 	echo "Downloading patchset ..." $'\n'
 		curl -L https://github.com/whitebelyash/mesa-tu8/releases/download/patchset-head-v2/tu8_kgsl_26.patch --output a8xx.patch &> /dev/null
 	echo "Applying patchset ..." $'\n'
-		if ! git apply --check a8xx.patch; then
-			echo "Failed to apply the patchset!"
-			exit 1
-		fi
-    	git apply a8xx.patch
+    		patch -p1 < a8xx.patch
 }
 
 
