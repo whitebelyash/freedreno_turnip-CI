@@ -116,8 +116,7 @@ EOF
 			--cross-file "android-aarch64.txt" \
 			--native-file "native.txt" \
 			--prefix /tmp/turnip \
-			-Dbuildtype=release \
-			-Dstrip=true \
+			-Dbuildtype=debug \
 			-Dplatforms=android \
 			-Dvideo-codecs= \
 			-Dplatform-sdk-version="$sdkver" \
