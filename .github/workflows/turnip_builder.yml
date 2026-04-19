@@ -30,20 +30,19 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         body: |
-          A8XX Turnip Vulkan V${{ inputs.version }}  
-          Built from: https://github.com/whitebelyash/mesa-tu8
+          A8XX Turnip Vulkan V${{ inputs.version }}
+          Built from: https://github.com/whitebelyash/mesa-tu8.
+          
+          I didn't test this this much. Contact me on FEX (#android-wastelands) or EmuCore discord if there are any issues.
+
           
           >[!WARNING]
-          > This release is still Beta, especially for devices other than Adreno 840. PLEASE, don't report any issues to Mesa
-          > Original merge request is Draft again, so it's not ready
+          > Please don't report issues to Mesa, PLEASE
                     
-          Supports following GPUs:
-          - Adreno 810 (tested, working, less stable than all other GPUs) - sysmem only
-          - Adreno 825 (tested, working with minor glitches compared to A830) - GMEM/sysmem
-          - Adreno 830 (tested, working) - sysmem-only - gmem causes GPU hangs
-          - Adreno 840 (tested, working) - GMEM/sysmem
-          Following GPUs were added but no proper testing was done:
-          - Adreno 829 (no testers were found)
+          Supported GPUs:
+          * Adreno 8XX Family: 840, 830, 829, 825, 810
+          * Adreno 7XX Family: any GPU supported by the upstream Turnip + 710/720 from Termux patches
+          * Adreno 6XX Family: any GPU supported by the upstream Turnip
           
           GPUs other than 830/840 can have reduced performance and/or more glitches. Can't do anything about that, sorry!  
           Adreno 810 is additionally very slow, I'm not sure if you even want to use Turnip there
@@ -55,7 +54,7 @@ jobs:
           * Disable DXVK_HUD if you see weird black artifacts
           * Apparently there are swizzling glitches in Eden & maybe other emulators, try increasing render scale(?)
           * Some games may require AMD/NVIDIA GPU to run and refuse to start on Qualcomm or block some features. I've included a patch to spoof as Steam Deck - use `TU_DEBUG=deck_emu`
-          * If too unstable - activate nolrz: `TU_DEBUG=nolrz`.
+          * GMEM rendering produces glitchy picture on A830 (write page faults), disable it with `TU_DEBUG=sysmem`. It's pretty much useless for PC emulation anyway.
 
         tag_name: tu_v${{ inputs.version }}
         name: Turnip A8XX v${{ inputs.version }}
