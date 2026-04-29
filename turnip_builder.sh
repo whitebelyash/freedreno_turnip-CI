@@ -10,7 +10,7 @@ magiskdir="$workdir/turnip_module"
 ndkver="android-ndk-r29"
 ndk="$workdir/$ndkver/toolchains/llvm/prebuilt/linux-x86_64/bin"
 sdkver="34"
-mesasrc="https://github.com/whitebelyash/mesa-tu8"
+mesasrc="https://github.com/whitebelyash/mesa-unified"
 srcfolder="mesa"
 
 clear
@@ -21,7 +21,8 @@ run_all(){
 	echo "====== Begin building TU V$BUILD_VERSION! ======"
 	check_deps
 	prepare_workdir
-	build_lib_for_android gen8
+	# This has path slash in the branch name and thus needs some workarounds
+	build_lib_for_android turnip-gen8 turnip/gen8
 	#build_lib_for_android gen8-yuck
 }
 
@@ -62,7 +63,7 @@ prepare_workdir(){
 		echo "#define TUGEN8_DRV_VERSION \"v$BUILD_VERSION\"" > ./src/freedreno/vulkan/tu_version.h
 }
 
-
+# $1 - real branch, $2 - visible branch name
 build_lib_for_android(){
 	echo "==== Building Mesa on $1 branch ===="
 	git checkout origin/$1
@@ -115,7 +116,7 @@ EOF
 		meson setup build-android-aarch64 \
 			--cross-file "android-aarch64.txt" \
 			--native-file "native.txt" \
-			--prefix /tmp/turnip-$1 \
+			--prefix /tmp/turnip-$2 \
 			-Dbuildtype=release \
 			-Dstrip=true \
 			-Dplatforms=android \
@@ -134,16 +135,16 @@ EOF
 	echo "Compiling build files ..." $'\n'
 		ninja -C build-android-aarch64 install
 
-	if ! [ -a /tmp/turnip-$1/lib/libvulkan_freedreno.so ]; then
+	if ! [ -a /tmp/turnip-$2/lib/libvulkan_freedreno.so ]; then
 		echo -e "$red Build failed! $nocolor" && exit 1
 	fi
 	echo "Making the archive"
-	cd /tmp/turnip-$1/lib
+	cd /tmp/turnip-$2/lib
 	cat <<EOF >"meta.json"
 {
   "schemaVersion": 1,
-  "name": "A8XX MR v$BUILD_VERSION",
-  "description": "A8xx support MR with A830/A825/A810/A829/UBWC-on-KGSL hacks. Built from $1 branch",
+  "name": "A8XX Turnip v$BUILD_VERSION",
+  "description": "A8xx support with some hacks. Built from $1 branch",
   "author": "whitebelyash",
   "packageVersion": "1",
   "vendor": "Mesa",
@@ -152,9 +153,9 @@ EOF
   "libraryName": "libvulkan_freedreno.so"
 }
 EOF
-zip /tmp/a8xx-$1-V$BUILD_VERSION.zip libvulkan_freedreno.so meta.json
+zip /tmp/a8xx-$2-V$BUILD_VERSION.zip libvulkan_freedreno.so meta.json
 cd -
-if ! [ -a /tmp/a8xx-$1-V$BUILD_VERSION.zip ]; then
+if ! [ -a /tmp/a8xx-$2-V$BUILD_VERSION.zip ]; then
 	echo -e "$red Failed to pack the archive! $nocolor"
 fi
 }
