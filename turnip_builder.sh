@@ -22,7 +22,7 @@ run_all(){
 	check_deps
 	prepare_workdir
 	# This has path slash in the branch name and thus needs some workarounds
-	build_lib_for_android turnip-gen8 turnip/gen8
+	build_lib_for_android turnip/gen8 turnip-gen8 
 	#build_lib_for_android gen8-yuck
 }
 
@@ -63,7 +63,7 @@ prepare_workdir(){
 		echo "#define TUGEN8_DRV_VERSION \"v$BUILD_VERSION\"" > ./src/freedreno/vulkan/tu_version.h
 }
 
-# $1 - real branch, $2 - visible branch name
+# $1 - real branch, $2 - escaped branch name
 build_lib_for_android(){
 	echo "==== Building Mesa on $1 branch ===="
 	git checkout origin/$1
