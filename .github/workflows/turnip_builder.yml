@@ -31,7 +31,7 @@ jobs:
       with:
         body: |
           A8XX Turnip Vulkan V${{ inputs.version }}
-          Built from: https://github.com/whitebelyash/mesa-tu8.
+          Built from: https://github.com/whitebelyash/mesa-unified (turnip/gen8 branch)
           
           I didn't test this this much. Contact me on FEX (#android-wastelands) or EmuCore discord if there are any issues.
 
@@ -41,14 +41,11 @@ jobs:
                     
           Supported GPUs:
           * Adreno 8XX Family: 840, 830, 829, 825, 810
-          * Adreno 7XX Family: any GPU supported by the upstream Turnip + 710/720 from Termux patches
+          * Adreno 7XX Family: any GPU supported by the upstream Turnip + 710/720 from Termux patches (unstable)
           * Adreno 6XX Family: any GPU supported by the upstream Turnip
           
           GPUs other than 830/840 can have reduced performance and/or more glitches. Can't do anything about that, sorry!  
           Adreno 810 is additionally very slow, I'm not sure if you even want to use Turnip there
-          
-          Files:
-          * gen8 - main branch (upstream MR + hacks applied)
           
           Notes:
           * Disable DXVK_HUD if you see weird black artifacts
@@ -59,4 +56,4 @@ jobs:
         tag_name: tu_v${{ inputs.version }}
         name: Turnip A8XX v${{ inputs.version }}
         files: |
-           /tmp/a8xx-gen8-V${{ inputs.version }}.zip
+           /tmp/a8xx-turnip-gen8-V${{ inputs.version }}.zip
