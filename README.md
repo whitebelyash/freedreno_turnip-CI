@@ -1,7 +1,7 @@
 # Freedreno/Turnip CI
 
 This repository holds scripts and workflow to autobuild new Turnip driver releases adapted for AdrenoTools usage.  
-These builds are based on https://github.com/whitebelyash/mesa-tu8 repository (gen8 branch) to properly or improperly support some Adreno 8XX GPUs till the support reaches upstream.
+These builds are based on https://github.com/whitebelyash/mesa-unified repository (turnip/gen8) to properly or improperly support some Adreno 8XX GPUs till the support reaches upstream.
 
 
 Old README:
