@@ -22,7 +22,7 @@ run_all(){
 	check_deps
 	prepare_workdir
 	# This has path slash in the branch name and thus needs some workarounds
-	build_lib_for_android turnip/gen8 turnip-gen8 
+	build_lib_for_android mojo/26.1 mojo
 	#build_lib_for_android gen8-yuck
 }
 
@@ -117,20 +117,7 @@ EOF
 			--cross-file "android-aarch64.txt" \
 			--native-file "native.txt" \
 			--prefix /tmp/turnip-$2 \
-			-Dbuildtype=release \
-			-Dstrip=true \
-			-Dplatforms=android \
-			-Dvideo-codecs= \
-			-Dplatform-sdk-version="$sdkver" \
-			-Dandroid-stub=true \
-			-Dgallium-drivers= \
-			-Dvulkan-drivers=freedreno \
-			-Dvulkan-beta=true \
-			-Dfreedreno-kmds=kgsl \
-			-Degl=disabled \
-			-Dplatform-sdk-version=36 \
-			-Dandroid-libbacktrace=disabled \
-			--reconfigure
+			 -Dbuildtype=debug -Degl=enabled -Dglx=disabled -Dgles1=false -Dgles2=true -Dopengl=true -Dandroid-stub=true -Dandroid-libbacktrace=disabled -Dplatforms=android -Dgallium-drivers=freedreno,zink -Dfreedreno-kmds=kgsl -Dplatform-sdk-version=29 -Dgbm=disabled -Degl-lib-suffix=_mesa -Dandroid-libbacktrace=disabled -Degl-native-platform=android
 
 	echo "Compiling build files ..." $'\n'
 		ninja -C build-android-aarch64 install
@@ -140,24 +127,11 @@ EOF
 	fi
 	echo "Making the archive"
 	cd /tmp/turnip-$2/lib
-	cat <<EOF >"meta.json"
-{
-  "schemaVersion": 1,
-  "name": "A8XX Turnip v$BUILD_VERSION",
-  "description": "A8xx support with some hacks. Built from $1 branch",
-  "author": "whitebelyash",
-  "packageVersion": "1",
-  "vendor": "Mesa",
-  "driverVersion": "Vulkan 1.4.335",
-  "minApi": 28,
-  "libraryName": "libvulkan_freedreno.so"
-}
-EOF
-zip /tmp/a8xx-$2-V$BUILD_VERSION.zip libvulkan_freedreno.so meta.json
-cd -
-if ! [ -a /tmp/a8xx-$2-V$BUILD_VERSION.zip ]; then
-	echo -e "$red Failed to pack the archive! $nocolor"
-fi
-}
+	zip /tmp/a8xx-$2-V$BUILD_VERSION.zip *.so
+	cd -
+	if ! [ -a /tmp/a8xx-$2-V$BUILD_VERSION.zip ]; then
+		echo -e "$red Failed to pack the archive! $nocolor"
+	fi
+	}
 
 run_all
